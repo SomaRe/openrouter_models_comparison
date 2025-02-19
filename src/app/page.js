@@ -1,8 +1,8 @@
 import React from 'react';
-import { Copy } from "lucide-react";
+import { Copy } from 'lucide-react';
 
 async function getModels() {
-    const res = await fetch(process.env.OPENROUTER_MODELS_URL || "");
+    const res = await fetch(process.env.OPENROUTER_MODELS_URL || "";
     const data = await res.json();
     return data.data;
 }
