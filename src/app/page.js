@@ -1,4 +1,5 @@
 import React from 'react';
+import { Copy } from 'lucide-react';
 
 async function getModels() {
   const res = await fetch(process.env.OPENROUTER_MODELS_URL || "");
@@ -8,6 +9,10 @@ async function getModels() {
 
 export default async function Home() {
   const models = await getModels();
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+  };
 
   return (
     <div className="container mx-auto py-8 dark:bg-gray-900 dark:text-white">
@@ -25,7 +30,10 @@ export default async function Home() {
           <tbody>
             {models.map((model) => (
               <tr key={model.id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="py-2 px-4 border-b dark:border-gray-600">{model.id}</td>
+                <td className="py-2 px-4 border-b dark:border-gray-600 flex items-center">
+                  {model.id}
+                  <Copy className="ml-2 cursor-pointer" size={16} onClick={() => copyToClipboard(model.id)} />
+                </td>
                 <td className="py-2 px-4 border-b dark:border-gray-600">{model.name}</td>
                 <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.prompt}</td>
                 <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.completion}</td>
