@@ -18,8 +18,8 @@ export default async function Home() {
             <tr className="bg-gray-100 dark:bg-gray-700">
               <th className="py-2 px-4 border-b dark:border-gray-600 text-left">ID</th>
               <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Name</th>
-              <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Cost per Million Input Tokens</th>
-              <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Cost per Million Output Tokens</th>
+              <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Input Cost ($/M)</th>
+              <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Output Cost ($/M)</th>
             </tr>
           </thead>
           <tbody>
@@ -27,8 +27,8 @@ export default async function Home() {
               <tr key={model.id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
                 <td className="py-2 px-4 border-b dark:border-gray-600">{model.id}</td>
                 <td className="py-2 px-4 border-b dark:border-gray-600">{model.name}</td>
-                <td className="py-2 px-4 border-b dark:border-gray-600">${(model.pricing.prompt * 1000000).toFixed(6).replace(/\.?0+$/, "")}</td>
-                <td className="py-2 px-4 border-b dark:border-gray-600">${(model.pricing.completion * 1000000).toFixed(6).replace(/\.?0+$/, "")}</td>
+                <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.prompt}</td>
+                <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.completion}</td>
               </tr>
             ))}
           </tbody>
