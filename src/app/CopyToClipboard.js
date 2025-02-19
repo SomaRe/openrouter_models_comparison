@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-export function CopyToClipboard({ text, children }) {
+export default function CopyToClipboard({ text, children }) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {

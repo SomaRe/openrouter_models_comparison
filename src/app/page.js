@@ -1,5 +1,6 @@
 import React from 'react';
 import CopyToClipboard from './CopyToClipboard';
+import { Copy } from 'lucide-react';
 
 async function getModels() {
     const res = await fetch(process.env.OPENROUTER_MODELS_URL || "");
@@ -27,8 +28,12 @@ export default async function Home() {
                         {models.map((model) => (
                             <tr key={model.id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
                                 <td className="py-2 px-4 border-b dark:border-gray-600 flex items-center">
-                                    {model.id}
-                                    <CopyToClipboard text={model.id} />
+                                    <CopyToClipboard text={model.id}>
+                                        <div className="flex items-center">
+                                            <span className="mr-2">{model.id}</span>
+                                            <Copy className="w-4 h-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer" />
+                                        </div>
+                                    </CopyToClipboard>
                                 </td>
                                 <td className="py-2 px-4 border-b dark:border-gray-600">{model.name}</td>
                                 <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.prompt}</td>
