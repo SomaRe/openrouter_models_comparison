@@ -1,5 +1,4 @@
 import React from 'react';
-import CopyToClipboard from '../components/CopyToClipboard';
 
 async function getModels() {
   const res = await fetch(process.env.OPENROUTER_MODELS_URL || "");
@@ -28,7 +27,6 @@ export default async function Home() {
               <tr key={model.id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
                 <td className="py-2 px-4 border-b dark:border-gray-600 flex items-center">
                   {model.id}
-                  <CopyToClipboard text={model.id} />
                 </td>
                 <td className="py-2 px-4 border-b dark:border-gray-600">{model.name}</td>
                 <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.prompt}</td>
