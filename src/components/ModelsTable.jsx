@@ -54,8 +54,8 @@ export default function ModelsTable({ models }) {
     const sortedModels = useMemo(() => sortModels(models, sortBy, sortOrder), [models, sortBy, sortOrder]);
 
     return (
-        <div className="overflow-x-auto">
-            <table className="table table-zebra w-full">
+        <div className="overflow-x-auto max-h-[70vh]">
+            <table className="table table-zebra w-full table-pin-rows table-pin-cols">
                 <thead>
                     <tr>
                         <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('id')}>
