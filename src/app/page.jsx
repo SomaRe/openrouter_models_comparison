@@ -9,10 +9,24 @@ async function getModels() {
 export default async function Home() {
     const initialModels = await getModels();
 
+    // Extract providers from model IDs
+    const providers = [...new Set(initialModels.map(model => model.id.split('/')[0]))];
+
     return (
         <div className="min-h-screen bg-base-200 p-4">
             <div className="container mx-auto py-8">
                 <h1 className="text-2xl font-bold mb-4">OpenRouter Models</h1>
+
+                {/* Provider Dropdown */}
+                <div className="mb-4">
+                    <select className="select select-bordered w-full max-w-xs">
+                        <option disabled selected>Select Provider</option>
+                        {providers.map(provider => (
+                            <option key={provider} value={provider}>{provider}</option>
+                        ))}
+                    </select>
+                </div>
+
                 <ModelsTable models={initialModels} />
             </div>
         </div>
