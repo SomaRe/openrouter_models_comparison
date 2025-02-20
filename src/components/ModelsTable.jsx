@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import CopyToClipboard from '../app/CopyToClipboard';
+import CopyToClipboard from './CopyToClipboard';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 
 const sortModels = (models, sortBy, sortOrder) => {
