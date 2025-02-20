@@ -4,6 +4,16 @@ import React, { useState, useMemo } from 'react';
 import CopyToClipboard from './CopyToClipboard';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 
+const formatNumberForMillions = (number) => {
+    if (number === null || number === undefined) {
+        return 'N/A';
+    }
+    const millions = number * 1000000;
+    console.log(millions);
+    // console.log(millions.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })); 
+    return millions.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+};
+
 const sortModels = (models, sortBy, sortOrder) => {
     if (!sortBy) return models;
 
@@ -92,8 +102,8 @@ export default function ModelsTable({ models }) {
                                 </CopyToClipboard>
                             </td>
                             <td className="py-2 px-4 ">{model.name}</td>
-                            <td className="py-2 px-4 ">${model.pricing.prompt}</td>
-                            <td className="py-2 px-4 ">${model.pricing.completion}</td>
+                            <td className="py-2 px-4 ">{formatNumberForMillions(Number(model.pricing.prompt))}</td>
+                            <td className="py-2 px-4 ">{formatNumberForMillions(Number(model.pricing.completion))}</td>
                         </tr>
                     ))}
                 </tbody>
