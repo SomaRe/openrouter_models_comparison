@@ -9,8 +9,6 @@ const formatNumberForMillions = (number) => {
         return 'N/A';
     }
     const millions = number * 1000000;
-    console.log(millions);
-    // console.log(millions.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })); 
     return millions.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 };
 
