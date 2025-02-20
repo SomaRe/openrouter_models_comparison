@@ -19,23 +19,25 @@ export default async function Home() {
                 <h1 className="text-2xl font-bold mb-4">OpenRouter Models</h1>
 
                 {/* Provider Dropdown */}
-                <div className="dropdown dropdown-hover mb-4">
-                    <div tabIndex={0} role="button" className="btn select-bordered w-full max-w-xs">
+                <details className="dropdown mb-4">
+                    <summary role="button" className="btn select-bordered w-full max-w-xs">
                         Select Provider
-                    </div>
-                    <ul tabIndex={0} className="dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-64 max-h-[40vh] overflow-y-auto space-y-2">
-                        {providers.map(provider => (
-                            <li key={provider}>
-                                <a>
-                                    <label className="flex items-center p-2">
-                                        <input type="checkbox" className="checkbox" />
-                                        <span className="ml-2">{provider}</span>
-                                    </label>
-                                </a>
-                            </li>
-                        ))}
+                    </summary>
+                    <ul className="menu dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-64 max-h-96 overflow-y-auto">
+                        <div className="overflow-y-auto max-h-96">
+                            {providers.map(provider => (
+                                <li key={provider}>
+                                    <a>
+                                        <label className="flex items-center p-2 cursor-pointer">
+                                            <input type="checkbox" className="checkbox" />
+                                            <span className="ml-2">{provider}</span>
+                                        </label>
+                                    </a>
+                                </li>
+                            ))}
+                        </div>
                     </ul>
-                </div>
+                </details>
 
                 <ModelsTable models={initialModels} />
             </div>
