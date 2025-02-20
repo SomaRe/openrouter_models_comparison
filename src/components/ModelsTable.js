@@ -21,8 +21,9 @@ const sortModels = (models, sortBy, sortOrder) => {
         if (aValue === undefined || aValue === null) return sortOrder === 'asc' ? -1 : 1;
         if (bValue === undefined || bValue === null) return sortOrder === 'asc' ? 1 : -1;
 
-        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            return aValue.localeCompare(bValue, undefined, { sensitivity: 'base' }) * (sortOrder === 'asc' ? 1 : -1);
+        }
 
         if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
@@ -86,11 +87,13 @@ export default function ModelsTable({ models }) {
                             <td className="py-2 px-4 border-b dark:border-gray-600 flex items-center">
                                 <CopyToClipboard text={model.id}>
                                     <div className="flex items-center">
-                                        <span className="mr-2">{model.id}</span>
+                                        <span className="mr-2">
+                                            {model.id}
+                                        </span>
                                         <Copy className="w-4 h-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer" />
                                     </div>
                                 </CopyToClipboard>
-                                </td>
+                            </td>
                             <td className="py-2 px-4 border-b dark:border-gray-600">{model.name}</td>
                             <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.prompt}</td>
                             <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.completion}</td>
@@ -101,9 +104,6 @@ export default function ModelsTable({ models }) {
         </div>
     );
 }
-
-
-export default ModelsTable;
 ```
 
 src\app\page.js
