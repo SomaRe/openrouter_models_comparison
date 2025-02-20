@@ -22,13 +22,13 @@ export default async function Home() {
                     <div tabIndex={0} role="button" className="btn select-bordered w-full max-w-xs">
                         Select Provider
                     </div>
-                    <ul tabIndex={0} className="dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-52 max-h-[40vh] overflow-y-auto space-y-2">
+                    <ul tabIndex={0} className="dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-64 max-h-[40vh] overflow-y-auto space-y-2">
                         {providers.map(provider => (
                             <li key={provider}>
                                 <a>
-                                    <label className="flex items-center space-x-2">
+                                    <label className="flex items-center p-2">
                                         <input type="checkbox" className="checkbox" />
-                                        <span>{provider}</span>
+                                        <span className="ml-2">{provider}</span>
                                     </label>
                                 </a>
                             </li>
