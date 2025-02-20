@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import CopyToClipboard from './CopyToClipboard';
-import { Copy } from 'lucide-react';
+import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 
 async function getModels() {
     const res = await fetch(process.env.OPENROUTER_MODELS_URL || "");
@@ -8,8 +8,56 @@ async function getModels() {
     return data.data;
 }
 
+const sortModels = (models, sortBy, sortOrder) => {
+    if (!sortBy) return models;
+
+    return [...models].sort((a, b) => {
+        let aValue, bValue;
+
+        if (sortBy === 'prompt' || sortBy === 'completion') {
+            aValue = a.pricing[sortBy];
+            bValue = b.pricing[sortBy];
+        } else {
+            aValue = a[sortBy];
+            bValue = b[sortBy];
+        }
+
+        if (aValue === undefined || aValue === null) return sortOrder === 'asc' ? -1 : 1;
+        if (bValue === undefined || bValue === null) return sortOrder === 'asc' ? 1 : -1;
+
+        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+        if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+    });
+};
+
 export default async function Home() {
-    const models = await getModels();
+    const initialModels = await getModels();
+    const [sortBy, setSortBy] = useState(null);
+    const [sortOrder, setSortOrder] = useState(null);
+
+    const handleSort = (columnName) => {
+        if (sortBy === columnName) {
+            if (sortOrder === 'asc') {
+                setSortOrder('desc');
+            } else if (sortOrder === 'desc') {
+                setSortBy(null);
+                setSortOrder(null);
+            } else {
+                setSortOrder('asc');
+                setSortBy(columnName);
+            }
+        } else {
+            setSortBy(columnName);
+            setSortOrder('asc');
+        }
+    };
+
+    const sortedModels = useMemo(() => sortModels(initialModels, sortBy, sortOrder), [initialModels, sortBy, sortOrder]);
+
 
     return (
         <div className="container mx-auto py-8 dark:bg-gray-900 dark:text-white">
@@ -18,10 +66,26 @@ export default async function Home() {
                 <table className="min-w-full bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                     <thead>
                         <tr className="bg-gray-100 dark:bg-gray-700">
-                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left">ID</th>
-                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Name</th>
-                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Input Cost ($/M)</th>
-                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left">Output Cost ($/M)</th>
+                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('id')}>
+                                ID
+                                {sortBy === 'id' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
+                                {sortBy === 'id' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
+                            </th>
+                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('name')}>
+                                Name
+                                {sortBy === 'name' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
+                                {sortBy === 'name' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
+                            </th>
+                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('prompt')}>
+                                Input Cost ($/M)
+                                {sortBy === 'prompt' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
+                                {sortBy === 'prompt' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
+                            </th>
+                            <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('completion')}>
+                                Output Cost ($/M)
+                                {sortBy === 'completion' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
+                                {sortBy === 'completion' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
