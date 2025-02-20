@@ -18,13 +18,22 @@ export default async function Home() {
                 <h1 className="text-2xl font-bold mb-4">OpenRouter Models</h1>
 
                 {/* Provider Dropdown */}
-                <div className="mb-4">
-                    <select className="select select-bordered w-full max-w-xs" defaultValue="Select Provider">
-                        <option disabled>Select Provider</option>
+                <div className="dropdown dropdown-hover mb-4">
+                    <div tabIndex={0} role="button" className="btn select-bordered w-full max-w-xs">
+                        Select Provider
+                    </div>
+                    <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                         {providers.map(provider => (
-                            <option key={provider} value={provider}>{provider}</option>
+                            <li key={provider}>
+                                <a>
+                                    <label className="flex items-center space-x-2">
+                                        <input type="checkbox" className="checkbox" />
+                                        <span>{provider}</span>
+                                    </label>
+                                </a>
+                            </li>
                         ))}
-                    </select>
+                    </ul>
                 </div>
 
                 <ModelsTable models={initialModels} />
