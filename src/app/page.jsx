@@ -19,8 +19,8 @@ export default async function Home() {
 
                 {/* Provider Dropdown */}
                 <div className="mb-4">
-                    <select className="select select-bordered w-full max-w-xs">
-                        <option disabled selected>Select Provider</option>
+                    <select className="select select-bordered w-full max-w-xs" defaultValue="Select Provider">
+                        <option disabled>Select Provider</option>
                         {providers.map(provider => (
                             <option key={provider} value={provider}>{provider}</option>
                         ))}
