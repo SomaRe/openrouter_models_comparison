@@ -10,7 +10,8 @@ export default async function Home() {
     const initialModels = await getModels();
 
     // Extract providers from model IDs
-    const providers = [...new Set(initialModels.map(model => model.id.split('/')[0]))];
+    // Extract providers from model IDs and sort them alphabetically
+    const providers = [...new Set(initialModels.map(model => model.id.split('/')[0]))].sort();
 
     return (
         <div className="min-h-screen bg-base-200 p-4">
