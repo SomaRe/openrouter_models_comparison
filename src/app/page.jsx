@@ -22,7 +22,7 @@ export default async function Home() {
                     <div tabIndex={0} role="button" className="btn select-bordered w-full max-w-xs">
                         Select Provider
                     </div>
-                    <ul tabIndex={0} className="dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 max-h-[40vh] overflow-y-auto">
+                    <ul tabIndex={0} className="dropdown-content z-50 p-2 shadow bg-base-100 rounded-box w-52 max-h-[40vh] overflow-y-auto">
                         {providers.map(provider => (
                             <li key={provider}>
                                 <a>
