@@ -1,8 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function ProviderSelector({ providers }) {
+export default function ProviderSelector({ providers, initialModels, onFilter }) {
+    const [selectedProviders, setSelectedProviders] = useState(new Set(providers));
+
+    const handleApplyFilters = () => {
+        const filteredModels = initialModels.filter(model => {
+            const provider = model.id.split('/')[0];
+            return selectedProviders.has(provider);
+        });
+        onFilter(filteredModels);
+    };
+
+    const handleCheckboxChange = (provider, isChecked) => {
+        setSelectedProviders(prev => {
+            const newSet = new Set(prev);
+            if (isChecked) {
+                newSet.add(provider);
+            } else {
+                newSet.delete(provider);
+            }
+            return newSet;
+        });
+    };
+
     return (
         <div className="mb-4">
             <label htmlFor="provider-modal" className="btn btn-primary">
@@ -16,17 +38,13 @@ export default function ProviderSelector({ providers }) {
                     <div className="flex justify-between mb-4">
                         <button className="btn btn-sm btn-ghost" onClick={(e) => {
                             e.preventDefault();
-                            document.querySelectorAll('.provider-checkbox').forEach(checkbox => {
-                                checkbox.checked = true;
-                            });
+                            setSelectedProviders(new Set(providers));
                         }}>
                             Select All
                         </button>
                         <button className="btn btn-sm btn-ghost" onClick={(e) => {
                             e.preventDefault();
-                            document.querySelectorAll('.provider-checkbox').forEach(checkbox => {
-                                checkbox.checked = false;
-                            });
+                            setSelectedProviders(new Set());
                         }}>
                             Unselect All
                         </button>
@@ -39,7 +57,8 @@ export default function ProviderSelector({ providers }) {
                                         <input 
                                             type="checkbox" 
                                             className="checkbox provider-checkbox" 
-                                            defaultChecked
+                                            checked={selectedProviders.has(provider)}
+                                            onChange={(e) => handleCheckboxChange(provider, e.target.checked)}
                                         />
                                         <span className="label-text">{provider}</span>
                                     </label>
@@ -48,7 +67,11 @@ export default function ProviderSelector({ providers }) {
                         ))}
                     </div>
                     <div className="modal-action">
-                        <label htmlFor="provider-modal" className="btn btn-primary">
+                        <label 
+                            htmlFor="provider-modal" 
+                            className="btn btn-primary"
+                            onClick={handleApplyFilters}
+                        >
                             Apply Filters
                         </label>
                     </div>

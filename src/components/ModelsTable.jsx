@@ -54,7 +54,7 @@ export default function ModelsTable({ models }) {
     const sortedModels = useMemo(() => sortModels(models, sortBy, sortOrder), [models, sortBy, sortOrder]);
 
     return (
-        <div className="max-h-[70vh]">
+        <div className="max-h-[70vh] overflow-auto">
             <table className="table table-zebra w-full table-pin-rows table-pin-cols">
                 <thead>
                     <tr>
