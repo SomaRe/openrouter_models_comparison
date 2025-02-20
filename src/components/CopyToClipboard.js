@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import React, { useState } from 'react';
 
 export default function CopyToClipboard({ text, children }) {
@@ -17,12 +19,14 @@ export default function CopyToClipboard({ text, children }) {
     };
 
     return (
-        <div className="relative inline-flex items-center" onClick={handleCopy}>
+        <div className="relative inline-flex items-center justify-between" onClick={handleCopy}>
             {children}
             {copied && (
-                <span className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded">
-                    Copied!
-                </span>
+                <div className="toast toast-top">
+                    <div className="alert alert-success">
+                        <span>Copied!</span>
+                    </div>
+                </div>
             )}
         </div>
     );

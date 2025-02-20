@@ -55,25 +55,25 @@ export default function ModelsTable({ models }) {
 
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <table className="table table-zebra w-full">
                 <thead>
-                    <tr className="bg-gray-100 dark:bg-gray-700">
-                        <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('id')}>
+                    <tr>
+                        <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('id')}>
                             ID
                             {sortBy === 'id' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
                             {sortBy === 'id' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
                         </th>
-                        <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('name')}>
+                        <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('name')}>
                             Name
                             {sortBy === 'name' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
                             {sortBy === 'name' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
                         </th>
-                        <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('prompt')}>
+                        <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('prompt')}>
                             Input Cost ($/M)
                             {sortBy === 'prompt' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
                             {sortBy === 'prompt' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
                         </th>
-                        <th className="py-2 px-4 border-b dark:border-gray-600 text-left cursor-pointer" onClick={() => handleSort('completion')}>
+                        <th scope="col" className="py-2 px-4 text-left cursor-pointer" onClick={() => handleSort('completion')}>
                             Output Cost ($/M)
                             {sortBy === 'completion' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
                             {sortBy === 'completion' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
@@ -82,18 +82,18 @@ export default function ModelsTable({ models }) {
                 </thead>
                 <tbody>
                     {sortedModels.map((model) => (
-                        <tr key={model.id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <td className="py-2 px-4 border-b dark:border-gray-600 flex items-center">
+                        <tr key={model.id}>
+                            <td className="py-2 px-4  flex items-center">
                                 <CopyToClipboard text={model.id}>
                                     <div className="flex items-center">
                                         <span className="mr-2">{model.id}</span>
-                                        <Copy className="w-4 h-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer" />
+                                        <Copy className="w-4 h-4" />
                                     </div>
                                 </CopyToClipboard>
                             </td>
-                            <td className="py-2 px-4 border-b dark:border-gray-600">{model.name}</td>
-                            <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.prompt}</td>
-                            <td className="py-2 px-4 border-b dark:border-gray-600">${model.pricing.completion}</td>
+                            <td className="py-2 px-4 ">{model.name}</td>
+                            <td className="py-2 px-4 ">${model.pricing.prompt}</td>
+                            <td className="py-2 px-4 ">${model.pricing.completion}</td>
                         </tr>
                     ))}
                 </tbody>
