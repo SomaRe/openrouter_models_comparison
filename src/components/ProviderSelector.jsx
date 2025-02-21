@@ -96,6 +96,7 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
 
     const handleSelectNoProviders = () => {
         setSelectedProviders(new Set());
+        setSelectedModels(new Set());
     };
 
     return (
