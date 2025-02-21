@@ -84,7 +84,14 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
     };
 
     const handleSelectAllProviders = () => {
+        const allModels = new Set();
+        providers.forEach(provider => {
+            getModelsForProvider(provider).forEach(model => {
+                allModels.add(model.id);
+            });
+        });
         setSelectedProviders(new Set(providers));
+        setSelectedModels(allModels);
     };
 
     const handleSelectNoProviders = () => {
