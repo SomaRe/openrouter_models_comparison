@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ModelsTable from '../components/ModelsTable';
 import ProviderSelector from '../components/ProviderSelector';
 
@@ -34,7 +34,7 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             setError(null);
