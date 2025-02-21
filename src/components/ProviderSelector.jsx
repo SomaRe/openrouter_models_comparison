@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const STORAGE_KEY = 'selectedProvidersAndModels';
 
-const getInitialSelections = () => {
+const getInitialSelections = (providers, initialModels) => {
     const savedSelections = localStorage.getItem(STORAGE_KEY);
     if (savedSelections) {
         try {
@@ -17,11 +17,16 @@ const getInitialSelections = () => {
             console.error('Error loading saved selections:', error);
         }
     }
-    return { providers: new Set(), models: new Set() };
+    // Default to all providers and models selected
+    const allModels = new Set(initialModels.map(model => model.id));
+    return {
+        providers: new Set(providers),
+        models: allModels
+    };
 };
 
 export default function ProviderSelector({ providers, initialModels, onFilter }) {
-    const initialSelection = getInitialSelections();
+    const initialSelection = getInitialSelections(providers, initialModels);
     const [selectedProviders, setSelectedProviders] = useState(initialSelection.providers);
     const [expandedProviders, setExpandedProviders] = useState({});
     const [selectedModels, setSelectedModels] = useState(initialSelection.models);
