@@ -181,6 +181,16 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                     <div className="modal-action mt-2">
                         <label
                             htmlFor="provider-modal"
+                            className="btn btn-sm"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById('provider-modal').checked = false;
+                            }}
+                        >
+                            Cancel
+                        </label>
+                        <label
+                            htmlFor="provider-modal"
                             className="btn btn-sm btn-primary"
                             onClick={(e) => {
                                 e.preventDefault();
