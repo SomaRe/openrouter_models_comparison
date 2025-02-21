@@ -4,36 +4,43 @@ import React, { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'selectedProvidersAndModels';
 
-export default function ProviderSelector({ providers, initialModels, onFilter }) {
-    const [selectedProviders, setSelectedProviders] = useState(new Set());
-    const [expandedProviders, setExpandedProviders] = useState({});
-    const [selectedModels, setSelectedModels] = useState(new Set());
-
-    // Load saved selections from localStorage on mount
-    useEffect(() => {
-        const savedSelections = localStorage.getItem(STORAGE_KEY);
-        if (savedSelections) {
-            try {
-                const { providers: savedProviders, models: savedModels } = JSON.parse(savedSelections);
-                setSelectedProviders(new Set(savedProviders));
-                setSelectedModels(new Set(savedModels));
-                // Apply filters immediately after loading
-                const filtered = initialModels.filter(model => {
-                    const provider = model.id.split('/')[0];
-                    return savedProviders.includes(provider) && 
-                           (savedModels.length === 0 || savedModels.includes(model.id));
-                });
-                onFilter(filtered);
-            } catch (error) {
-                console.error('Error loading saved selections:', error);
-            }
-        } else {
-            // If no saved selections, default to all providers selected
-            setSelectedProviders(new Set(providers));
-            // Apply default filter (show all models)
-            onFilter(initialModels);
+const getInitialSelections = () => {
+    const savedSelections = localStorage.getItem(STORAGE_KEY);
+    if (savedSelections) {
+        try {
+            const { providers: savedProviders, models: savedModels } = JSON.parse(savedSelections);
+            return {
+                providers: new Set(savedProviders),
+                models: new Set(savedModels)
+            };
+        } catch (error) {
+            console.error('Error loading saved selections:', error);
         }
-    }, [providers, initialModels, onFilter]);
+    }
+    return { providers: new Set(), models: new Set() };
+};
+
+
+export default function ProviderSelector({ providers, initialModels, onFilter }) {
+    const initialSelection = getInitialSelections();
+    const [selectedProviders, setSelectedProviders] = useState(initialSelection.providers);
+    const [expandedProviders, setExpandedProviders] = useState({});
+    const [selectedModels, setSelectedModels] = useState(initialSelection.models);
+
+
+    // Apply filters on mount and when selections change
+    useEffect(() => {
+        let filteredModels = initialModels.filter(model => {
+            const provider = model.id.split('/')[0];
+            return selectedProviders.has(provider);
+        });
+
+        // Include only selected models
+        filteredModels = filteredModels.filter(model => selectedModels.has(model.id));
+        onFilter(filteredModels);
+
+    }, [selectedProviders, selectedModels, initialModels, onFilter]);
+
 
     // Save selections to localStorage whenever they change
     useEffect(() => {
@@ -44,17 +51,6 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
         localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
     }, [selectedProviders, selectedModels]);
 
-    const handleApplyFilters = () => {
-        let filteredModels = initialModels.filter(model => {
-            const provider = model.id.split('/')[0];
-            return selectedProviders.has(provider);
-        });
-
-        // Include only selected models
-        filteredModels = filteredModels.filter(model => selectedModels.has(model.id));
-
-        onFilter(filteredModels);
-    };
 
     const handleCheckboxChange = (provider, isChecked) => {
         setSelectedProviders(prev => {
@@ -65,9 +61,8 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                 newSet.delete(provider);
             }
             return newSet;
-    }
-    );
-};
+        });
+    };
 
     const handleModelCheckboxChange = (modelId, isChecked) => {
         setSelectedModels(prev => {
@@ -92,6 +87,15 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
         return initialModels.filter(model => model.id.startsWith(provider + '/'));
     };
 
+    const handleSelectAllProviders = () => {
+        setSelectedProviders(new Set(providers));
+    };
+
+    const handleSelectNoProviders = () => {
+        setSelectedProviders(new Set());
+    };
+
+
     return (
         <div className="mb-4">
             <label htmlFor="provider-modal" className="btn btn-sm btn-primary">
@@ -104,21 +108,15 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                     <div className="flex justify-between items-center mb-2">
                         <h3 className="font-bold text-lg">Filter Providers & Models</h3>
                         <div className="flex gap-2">
-                            <button 
-                                className="btn btn-xs btn-ghost" 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setSelectedProviders(new Set(providers));
-                                }}
+                            <button
+                                className="btn btn-xs btn-ghost"
+                                onClick={handleSelectAllProviders}
                             >
                                 All
                             </button>
-                            <button 
-                                className="btn btn-xs btn-ghost" 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setSelectedProviders(new Set());
-                                }}
+                            <button
+                                className="btn btn-xs btn-ghost"
+                                onClick={handleSelectNoProviders}
                             >
                                 None
                             </button>
@@ -127,7 +125,7 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                     <div className="overflow-y-auto flex-1 pr-2">
                         {providers.map(provider => (
                             <div key={provider} className="mb-1">
-                                <div 
+                                <div
                                     className="flex items-center justify-between p-2 hover:bg-base-200 rounded cursor-pointer"
                                     onClick={(e) => {
                                         // Only toggle if not clicking the checkbox
@@ -148,7 +146,7 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                                         </span>
                                     </div>
                                     {getModelsForProvider(provider).length > 0 && (
-                                        <button 
+                                        <button
                                             className="btn btn-xs btn-ghost"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -184,7 +182,10 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                         <label
                             htmlFor="provider-modal"
                             className="btn btn-sm btn-primary"
-                            onClick={handleApplyFilters}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById('provider-modal').checked = false;
+                            }}
                         >
                             Apply
                         </label>
