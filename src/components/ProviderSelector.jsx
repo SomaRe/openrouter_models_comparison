@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const STORAGE_KEY = 'selectedProvidersAndModels';
 
@@ -27,18 +27,41 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
     const [expandedProviders, setExpandedProviders] = useState({});
     const [selectedModels, setSelectedModels] = useState(initialSelection.models);
 
-
-    // Apply filters on mount and when selections change
-    useEffect(() => {
-        let filteredModels = initialModels.filter(model => {
+    // Memoize Provider-Model Grouping
+    const modelsByProvider = useMemo(() => {
+        const map = new Map();
+        initialModels.forEach(model => {
             const provider = model.id.split('/')[0];
-            return selectedProviders.has(provider);
+            if (!map.has(provider)) map.set(provider, []);
+            map.get(provider).push(model);
         });
+        return map;
+    }, [initialModels]);
 
-        // Include only selected models
-        filteredModels = filteredModels.filter(model => selectedModels.has(model.id));
+    // Memoize Event Handlers
+    const handleCheckboxChange = useCallback((provider, isChecked) => {
+        setSelectedProviders(prev => {
+            const newSet = new Set(prev);
+            isChecked ? newSet.add(provider) : newSet.delete(provider);
+            return newSet;
+        });
+    }, []);
+
+    const handleModelCheckboxChange = useCallback((modelId, isChecked) => {
+        setSelectedModels(prev => {
+            const newSet = new Set(prev);
+            isChecked ? newSet.add(modelId) : newSet.delete(modelId);
+            return newSet;
+        });
+    }, []);
+
+    // Optimize Filtering in useEffect
+    useEffect(() => {
+        const filteredModels = initialModels.filter(model => {
+            const provider = model.id.split('/')[0];
+            return selectedProviders.has(provider) && selectedModels.has(model.id);
+        });
         onFilter(filteredModels);
-
     }, [selectedProviders, selectedModels, initialModels, onFilter]);
 
 
@@ -52,29 +75,6 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
     }, [selectedProviders, selectedModels]);
 
 
-    const handleCheckboxChange = (provider, isChecked) => {
-        setSelectedProviders(prev => {
-            const newSet = new Set(prev);
-            if (isChecked) {
-                newSet.add(provider);
-            } else {
-                newSet.delete(provider);
-            }
-            return newSet;
-        });
-    };
-
-    const handleModelCheckboxChange = (modelId, isChecked) => {
-        setSelectedModels(prev => {
-            const newSet = new Set(prev);
-            if (isChecked) {
-                newSet.add(modelId);
-            } else {
-                newSet.delete(modelId);
-            }
-            return newSet;
-        });
-    };
 
     const toggleProvider = (provider) => {
         setExpandedProviders(prev => ({
@@ -84,7 +84,7 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
     };
 
     const getModelsForProvider = (provider) => {
-        return initialModels.filter(model => model.id.startsWith(provider + '/'));
+        return modelsByProvider.get(provider) || [];
     };
 
     const handleSelectAllProviders = () => {
