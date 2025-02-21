@@ -20,7 +20,6 @@ const getInitialSelections = () => {
     return { providers: new Set(), models: new Set() };
 };
 
-
 export default function ProviderSelector({ providers, initialModels, onFilter }) {
     const initialSelection = getInitialSelections();
     const [selectedProviders, setSelectedProviders] = useState(initialSelection.providers);
@@ -64,7 +63,6 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
         onFilter(filteredModels);
     }, [selectedProviders, selectedModels, initialModels, onFilter]);
 
-
     // Save selections to localStorage whenever they change
     useEffect(() => {
         const selections = {
@@ -73,8 +71,6 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
     }, [selectedProviders, selectedModels]);
-
-
 
     const toggleProvider = (provider) => {
         setExpandedProviders(prev => ({
@@ -94,7 +90,6 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
     const handleSelectNoProviders = () => {
         setSelectedProviders(new Set());
     };
-
 
     return (
         <div className="mb-4">
@@ -127,19 +122,21 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                             <div key={provider} className="mb-1">
                                 <div
                                     className="flex items-center justify-between p-2 hover:bg-base-200 rounded cursor-pointer"
-                                    onClick={(e) => {
-                                        // Only toggle if not clicking the checkbox
-                                        if (e.target.tagName !== 'INPUT' && getModelsForProvider(provider).length > 0) {
+                                    onClick={() => {
+                                        if (getModelsForProvider(provider).length > 0) {
                                             toggleProvider(provider);
                                         }
                                     }}
                                 >
-                                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                    <div className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
                                             className="checkbox checkbox-sm"
                                             checked={selectedProviders.has(provider)}
-                                            onChange={(e) => handleCheckboxChange(provider, e.target.checked)}
+                                            onChange={(e) => {
+                                                e.stopPropagation();
+                                                handleCheckboxChange(provider, e.target.checked);
+                                            }}
                                         />
                                         <span className="font-medium">
                                             {provider}
