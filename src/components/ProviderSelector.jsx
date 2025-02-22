@@ -135,12 +135,20 @@ export default function ProviderSelector({ providers, initialModels, onFilter })
                             <div key={provider} className="mb-1">
                                 <div
                                     className="flex items-center justify-between p-2 hover:bg-base-200 rounded cursor-pointer"
-                                    onClick={() => {
-                                        if (getModelsForProvider(provider).length > 0) {
-                                            toggleProvider(provider);
-                                        }
-                                    }}
-                                >
+                                   onClick={() => {
+                                       if (getModelsForProvider(provider).length > 0) {
+                                           if (!selectedProviders.has(provider)) {
+                                               setExpandedProviders(prev => ({
+                                                   ...prev,
+                                                   [provider]: true
+                                               }));
+                                           }
+                                           else if (selectedProviders.has(provider)) {
+                                               toggleProvider(provider);
+                                           }
+                                       }
+                                   }}
+                               >
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
