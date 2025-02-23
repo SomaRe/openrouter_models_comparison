@@ -31,7 +31,12 @@ export async function POST(request) {
 export async function GET() {
   try {
     const comments = await prisma.comment.findMany()
-    return Response.json(comments)
+    // Convert to a map for easier lookup
+    const commentMap = comments.reduce((map, comment) => {
+      map[comment.modelId] = comment.comments
+      return map
+    }, {})
+    return Response.json(commentMap)
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 })
   }

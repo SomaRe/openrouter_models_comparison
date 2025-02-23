@@ -19,19 +19,6 @@ const saveComment = async (modelId, comment) => {
   }
 };
 
-const getComment = async (modelId) => {
-  try {
-    const response = await fetch(`/api/comments/${modelId}`);
-    if (response.ok) {
-      const data = await response.json();
-      return data.comments || '';
-    }
-    return '';
-  } catch (error) {
-    console.error('Error fetching comment:', error);
-    return '';
-  }
-};
 
 const formatNumberForMillions = (number) => {
     if (number === null || number === undefined) {
@@ -72,18 +59,21 @@ export default function ModelsTable({ models }) {
     const [sortOrder, setSortOrder] = useState(null);
     const [comments, setComments] = useState({});
 
-    // Load comments for all models on mount
+    // Load all comments on mount
     useEffect(() => {
         const loadComments = async () => {
-            const commentsMap = {};
-            for (const model of models) {
-                const comment = await getComment(model.id);
-                commentsMap[model.id] = comment;
+            try {
+                const response = await fetch('/api/comments');
+                if (response.ok) {
+                    const commentsMap = await response.json();
+                    setComments(commentsMap);
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
             }
-            setComments(commentsMap);
         };
         loadComments();
-    }, [models]);
+    }, []);
 
     const handleSort = (columnName) => {
         if (sortBy === columnName) {
