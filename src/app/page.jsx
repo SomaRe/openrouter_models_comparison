@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import ModelsTable from '../components/ModelsTable';
 import ProviderSelector from '../components/ProviderSelector';
-import CommentsManager from '../components/CommentsManager';
 
 async function getModels() {
     try {
@@ -83,10 +82,6 @@ export default function Home() {
                     )}
                 </section>
 
-                {/* Comments Manager Section */}
-                <section>
-                    <CommentsManager />
-                </section>
             </div>
         </div>
     );

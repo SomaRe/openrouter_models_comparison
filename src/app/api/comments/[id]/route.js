@@ -6,7 +6,7 @@ export async function GET(request, { params }) {
   try {
     const comment = await prisma.comment.findUnique({
       where: {
-        id: params.id
+        modelId: params.id
       }
     })
     if (!comment) {

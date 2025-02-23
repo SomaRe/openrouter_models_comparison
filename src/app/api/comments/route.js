@@ -4,12 +4,24 @@ const prisma = new PrismaClient()
 
 export async function POST(request) {
   try {
-    const { comment } = await request.json()
-    const newComment = await prisma.comment.create({
-      data: {
-        comments: comment
-      }
+    const { modelId, comment } = await request.json()
+    
+    // Check if comment exists for this model
+    const existingComment = await prisma.comment.findUnique({
+      where: { modelId }
     })
+    
+    const newComment = existingComment 
+      ? await prisma.comment.update({
+          where: { modelId },
+          data: { comments: comment }
+        })
+      : await prisma.comment.create({
+          data: {
+            modelId,
+            comments: comment
+          }
+        })
     return Response.json(newComment)
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 })
