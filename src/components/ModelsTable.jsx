@@ -4,16 +4,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import CopyToClipboard from './CopyToClipboard';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 
-const saveComment = async (modelId, comment) => {
-  const response = await fetch('/api/comments', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ modelId, comment }),
-  });
-  return await response.json();
-};
 
 const formatNumberForMillions = (number) => {
   if (number === null || number === undefined) return 'N/A';
@@ -119,7 +109,11 @@ export default function ModelsTable({ models }) {
                   className="textarea textarea-bordered w-full"
                   placeholder="Add notes..."
                   defaultValue={comments[model.id] || ''}
-                  onBlur={(e) => saveComment(model.id, e.target.value)}
+                  onBlur={(e) => {
+                    const updatedComments = { ...comments, [model.id]: e.target.value };
+                    setComments(updatedComments);
+                    saveComments(updatedComments);
+                  }}
                 />
               </td>
             </tr>

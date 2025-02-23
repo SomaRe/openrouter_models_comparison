@@ -1,43 +1,21 @@
-import { PrismaClient } from '@prisma/client'
+import { NextResponse } from 'next/server';
+import { getComments, updateComments } from '@/lib/comments';
 
-const prisma = new PrismaClient()
-
-export async function POST(request) {
+export async function GET(request) {
   try {
-    const { modelId, comment } = await request.json()
-    
-    // Check if comment exists for this model
-    const existingComment = await prisma.comment.findUnique({
-      where: { modelId }
-    })
-    
-    const newComment = existingComment 
-      ? await prisma.comment.update({
-          where: { modelId },
-          data: { comments: comment }
-        })
-      : await prisma.comment.create({
-          data: {
-            modelId,
-            comments: comment
-          }
-        })
-    return Response.json(newComment)
+    const comments = await getComments();
+    return NextResponse.json(comments);
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to load comments' }, { status: 500 });
   }
 }
 
-export async function GET() {
+export async function POST(request) {
   try {
-    const comments = await prisma.comment.findMany()
-    // Convert to a map for easier lookup
-    const commentMap = comments.reduce((map, comment) => {
-      map[comment.modelId] = comment.comments
-      return map
-    }, {})
-    return Response.json(commentMap)
+    const comments = await request.json();
+    await updateComments(comments);
+    return NextResponse.json({ success: true });
   } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update comments' }, { status: 500 });
   }
 }

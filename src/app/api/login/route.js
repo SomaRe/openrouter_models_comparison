@@ -4,8 +4,10 @@ import { SignJWT } from 'jose';
 export async function POST(request) {
   const { username, password } = await request.json();
 
-  // Replace with your actual authentication logic (e.g., database check)
-  if (username === 'user' && password === 'password') {
+  const validUsername = process.env.LOGIN_USERNAME;
+  const validPassword = process.env.PASSWORD;
+
+  if (username === validUsername && password === validPassword) {
     // Sign token
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const alg = 'HS256'
