@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import ModelsTable from '../components/ModelsTable';
 import ProviderSelector from '../components/ProviderSelector';
+import CommentsManager from '../components/CommentsManager';
 
 async function getModels() {
     try {
@@ -55,30 +56,37 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-base-200 p-4">
-            <div className="container mx-auto py-8">
-                <h1 className="text-2xl font-bold mb-4">OpenRouter Models</h1>
+            <div className="container mx-auto py-8 space-y-8">
+                {/* OpenRouter Models Section */}
+                <section>
+                    <h1 className="text-2xl font-bold mb-4">OpenRouter Models</h1>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <span className="loading loading-spinner loading-lg"></span>
+                        </div>
+                    ) : error ? (
+                        <div className="alert alert-error">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Error loading models: {error}</span>
+                        </div>
+                    ) : (
+                        <>
+                            <ProviderSelector 
+                                providers={providers} 
+                                initialModels={initialModels}
+                                onFilter={setFilteredModels}
+                            />
+                            <ModelsTable models={filteredModels} />
+                        </>
+                    )}
+                </section>
 
-                {isLoading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <span className="loading loading-spinner loading-lg"></span>
-                    </div>
-                ) : error ? (
-                    <div className="alert alert-error">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Error loading models: {error}</span>
-                    </div>
-                ) : (
-                    <>
-                        <ProviderSelector 
-                            providers={providers} 
-                            initialModels={initialModels}
-                            onFilter={setFilteredModels}
-                        />
-                        <ModelsTable models={filteredModels} />
-                    </>
-                )}
+                {/* Comments Manager Section */}
+                <section>
+                    <CommentsManager />
+                </section>
             </div>
         </div>
     );
