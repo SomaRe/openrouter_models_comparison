@@ -5,151 +5,127 @@ import CopyToClipboard from './CopyToClipboard';
 import { Copy, ChevronDown, ChevronUp } from 'lucide-react';
 
 const saveComment = async (modelId, comment) => {
-  try {
-    const response = await fetch('/api/comments', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ modelId, comment }),
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('Error saving comment:', error);
-  }
+  const response = await fetch('/api/comments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ modelId, comment }),
+  });
+  return await response.json();
 };
 
-
 const formatNumberForMillions = (number) => {
-    if (number === null || number === undefined) {
-        return 'N/A';
-    }
-    const millions = number * 1000000;
-    return millions.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  if (number === null || number === undefined) return 'N/A';
+  const millions = number * 1000000;
+  return millions.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 };
 
 const sortModels = (models, sortBy, sortOrder) => {
-    if (!sortBy) return models;
+  if (!sortBy) return models;
 
-    return [...models].sort((a, b) => {
-        let aValue, bValue;
+  return [...models].sort((a, b) => {
+    let aValue = sortBy === 'prompt' || sortBy === 'completion' ? a.pricing[sortBy] : a[sortBy];
+    let bValue = sortBy === 'prompt' || sortBy === 'completion' ? b.pricing[sortBy] : b[sortBy];
 
-        if (sortBy === 'prompt' || sortBy === 'completion') {
-            aValue = a.pricing[sortBy];
-            bValue = b.pricing[sortBy];
-        } else {
-            aValue = a[sortBy];
-            bValue = b[sortBy];
-        }
+    if (aValue === undefined || aValue === null) return sortOrder === 'asc' ? -1 : 1;
+    if (bValue === undefined || bValue === null) return sortOrder === 'asc' ? 1 : -1;
 
-        if (aValue === undefined || aValue === null) return sortOrder === 'asc' ? -1 : 1;
-        if (bValue === undefined || bValue === null) return sortOrder === 'asc' ? 1 : -1;
+    if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+    if (typeof bValue === 'string') bValue = bValue.toLowerCase();
 
-        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-
-        if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
-        return 0;
-    });
+    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
 };
 
 export default function ModelsTable({ models }) {
-    const [sortBy, setSortBy] = useState(null);
-    const [sortOrder, setSortOrder] = useState(null);
-    const [comments, setComments] = useState({});
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
+  const [comments, setComments] = useState({});
 
-    // Load all comments on mount
-    useEffect(() => {
-        const loadComments = async () => {
-            try {
-                const response = await fetch('/api/comments');
-                if (response.ok) {
-                    const commentsMap = await response.json();
-                    setComments(commentsMap);
-                }
-            } catch (error) {
-                console.error('Error loading comments:', error);
-            }
-        };
-        loadComments();
-    }, []);
-
-    const handleSort = (columnName) => {
-        if (sortBy === columnName) {
-            if (sortOrder === 'asc') {
-                setSortOrder('desc');
-            } else if (sortOrder === 'desc') {
-                setSortBy(null);
-                setSortOrder(null);
-            } else {
-                setSortOrder('asc');
-                setSortBy(columnName);
-            }
-        } else {
-            setSortBy(columnName);
-            setSortOrder('asc');
-        }
+  useEffect(() => {
+    const loadComments = async () => {
+      const response = await fetch('/api/comments');
+      if (response.ok) {
+        const commentsMap = await response.json();
+        setComments(commentsMap);
+      }
     };
+    loadComments();
+  }, []);
 
-    const sortedModels = useMemo(() => sortModels(models, sortBy, sortOrder), [models, sortBy, sortOrder]);
+  const handleSort = (columnName) => {
+    if (sortBy === columnName) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? null : 'asc');
+      if (sortOrder === 'desc') setSortBy(null);
+    } else {
+      setSortBy(columnName);
+      setSortOrder('asc');
+    }
+  };
 
-    return (
-        <div className="max-h-[70vh] overflow-auto">
-            <table className="table table-zebra w-full table-pin-rows table-pin-cols">
-                <thead>
-                    <tr>
-                        <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('id')}>
-                            ID
-                            {sortBy === 'id' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
-                            {sortBy === 'id' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
-                        </th>
-                        <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('name')}>
-                            Name
-                            {sortBy === 'name' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
-                            {sortBy === 'name' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
-                        </th>
-                        <th scope="col" className="py-2 px-4  text-left cursor-pointer" onClick={() => handleSort('prompt')}>
-                            Input Cost ($/M)
-                            {sortBy === 'prompt' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
-                            {sortBy === 'prompt' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
-                        </th>
-                        <th scope="col" className="py-2 px-4 text-left cursor-pointer" onClick={() => handleSort('completion')}>
-                            Output Cost ($/M)
-                            {sortBy === 'completion' && sortOrder === 'asc' && <ChevronUp className="inline-block w-4 h-4 ml-1" />}
-                            {sortBy === 'completion' && sortOrder === 'desc' && <ChevronDown className="inline-block w-4 h-4 ml-1" />}
-                        </th>
-                        <th scope="col" className="py-2 px-4 text-left">
-                            Notes
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {sortedModels.map((model) => (
-                        <tr key={model.id}>
-                            <td className="py-2 px-4  flex items-center">
-                                <CopyToClipboard text={model.id}>
-                                    <div className="flex items-center">
-                                        <span className="mr-2">{model.id}</span>
-                                        <Copy className="w-4 h-4" />
-                                    </div>
-                                </CopyToClipboard>
-                            </td>
-                            <td className="py-2 px-4 ">{model.name}</td>
-                            <td className="py-2 px-4 ">{formatNumberForMillions(Number(model.pricing.prompt))}</td>
-                            <td className="py-2 px-4 ">{formatNumberForMillions(Number(model.pricing.completion))}</td>
-                            <td className="py-2 px-4 ">
-                              <textarea
-                                className="textarea textarea-bordered w-full"
-                                placeholder="Add notes..."
-                                defaultValue={comments[model.id] || ''}
-                                onBlur={(e) => saveComment(model.id, e.target.value)}
-                              />
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+  const sortedModels = useMemo(() => sortModels(models, sortBy, sortOrder), [models, sortBy, sortOrder]);
+
+  return (
+    <div className="max-h-[70vh] overflow-auto">
+      <table className="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th className="cursor-pointer" onClick={() => handleSort('id')}>
+              <div className="flex items-center">
+                ID
+                {sortBy === 'id' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />)}
+              </div>
+            </th>
+            <th className="cursor-pointer" onClick={() => handleSort('name')}>
+              <div className="flex items-center">
+                Name
+                {sortBy === 'name' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />)}
+              </div>
+            </th>
+            <th className="cursor-pointer" onClick={() => handleSort('prompt')}>
+              <div className="flex items-center">
+                Input Cost ($/M)
+                {sortBy === 'prompt' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />)}
+              </div>
+            </th>
+            <th className="cursor-pointer" onClick={() => handleSort('completion')}>
+              <div className="flex items-center">
+                Output Cost ($/M)
+                {sortBy === 'completion' && (sortOrder === 'asc' ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />)}
+              </div>
+            </th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedModels.map((model) => (
+            <tr key={model.id}>
+              <td>
+                <CopyToClipboard text={model.id}>
+                  <div className="flex items-center hover:text-primary cursor-pointer">
+                    <span className="mr-2">{model.id}</span>
+                    <Copy className="w-4 h-4" />
+                  </div>
+                </CopyToClipboard>
+              </td>
+              <td>{model.name}</td>
+              <td>{formatNumberForMillions(Number(model.pricing.prompt))}</td>
+              <td>{formatNumberForMillions(Number(model.pricing.completion))}</td>
+              <td>
+                <textarea
+                  className="textarea textarea-bordered w-full"
+                  placeholder="Add notes..."
+                  defaultValue={comments[model.id] || ''}
+                  onBlur={(e) => saveComment(model.id, e.target.value)}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }

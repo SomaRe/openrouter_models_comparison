@@ -15,12 +15,11 @@ export default function Header() {
             router.push('/login');
         } else {
             console.error('Logout failed');
-            // Handle logout failure, maybe show an error message
         }
     };
 
     return (
-        <div className="navbar bg-base-100 shadow-sm mb-4">
+        <div className="navbar bg-base-100 shadow-sm">
             <div className="flex-1">
                 <Link href="/" className="btn btn-ghost normal-case text-xl">
                     OpenRouter Models
